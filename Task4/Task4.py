@@ -8,6 +8,7 @@ Define mass column ranges (user entry)
   Define number of bins, input(how many bins want to visualice in hystogram)
 Count the number of peptides on each range, for each enzyme
   Total of peptides
+  Search for peptides with Cys, Met
   Subtotal of peptides with ions (ionA, ionB, ...)
 Calculate mean values of mass on each range/bin for each enzyme
   Mean for all peptides by range
