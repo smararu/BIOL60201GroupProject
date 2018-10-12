@@ -15,5 +15,7 @@ Calculate mean values of mass on each range/bin for each enzyme
   Mean of peptides by ions type (ionA, ionB, ...)
 Calculate instruments accuracy (error) for each enzyme
 Count peptides with Cys or Met
-Transform mass values from Da to ppm (conversion formula)
+
+Transform mass values from Da to ppm (convertion formula)
+
 Report CSV
