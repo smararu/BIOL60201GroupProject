@@ -16,20 +16,30 @@ enzyme = input("Please input your choice of enzyme (from: trypsin, endoproteinas
     #errors might include user inputting invalid enzyme name
 print('You entered {0}'.format(enzyme)) #print as a check!
 
-
-
 #Create a function (e.g. digest) that contains the common elements, and use the varying bits as parameters!
 #parameters are the variable 'enzyme' (name of enzyme)
 #take each protein each time in sequence.
 
+lines = fread.readlines() #read all lines of the file to a list called lines
+
+#str.startswith will return True/False if my string starts with a thing. so for each line it can return true/false for >
+for line in lines:
+  if line.startswith('>'):
+    # there's a protein name here, do something with it
+  else:
+    # no protein name, do something else
 
 def digest(enzyme): #defining a function called digest which takes an argument enzyme
-    protein_name = ??? #pull out name of first protein from fasta file
+    protein_name = 'name' #pull out name of first protein from fasta file
     peptide_num = 1 #set peptide number to 1
 
-digest(enzyme)
+    #concatenate protein_name and peptide_num to produce new header line starting >
 
+for line in lines:
+    end = * #pull out sequences between > and >
+    digest(enzyme)
 
+#my sequences start with > and end in *
 #if trypsin, identify first peptide at Lysine (K) or Arginine (R), and if the next amino acid is not Proline (P)
 #save sequence up to that point as protein 1 peptide 1
 #take remaining sequence and repeat process
