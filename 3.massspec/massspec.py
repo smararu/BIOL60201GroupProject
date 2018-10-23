@@ -22,39 +22,55 @@ averageMasses = {'A' :  71.08, 'C' : 103.14, 'D' : 115.09,  #dictionary of avera
 'S' :  87.08,'T' : 101.10, 'V' :  99.13, 
 'W' : 186.21, 'Y' : 163.18, '*' : 0.0 }
 
-outputDict ={}
 
-file = 'dummy.peps' # assign filename to a variable
+
+
+massdictionary = averageMasses #for testing, assumes user using average masses
+file = 'dummy.peps' # assign filename to as variable
 fileObj = open(file, 'r') # open and read file
 
-lines = fileObj.readlines() # read each line in file, assigns each line as an item in list 'lines'
-for headingIdentify in lines:# for eachline in lines
-	if '>' in str(headingIdentify): # if this is the heading off a fasta sequence
-		splitheading = headingIdentify.split()#		split the heading into separate strings
-			#if there is already a key in the dictionary with this heading 
-				#add the peptide number as a new item under that heading
-			# else
-				#create a new key for that peptide
-				#append the dictionary to add the peptide number
-#   
-#	store peptide name as key in dictionary
-#	store the peptide number as key in a nested dictionary
-#	call a function which assigns the sum masses of AAs for the following line
-#
+proteinBank = []  #creates a list for which peptide data will be stored
 
+lines = fileObj.readlines() # read each line in file, assigns each line as an item in array 'lines'
+for index in range(0, len(lines),2): # for each of the lines in the range, counting in increments of 2
+	line = lines[index] # assigns each line as a variale
+	nextLine = lines[index + 1] #assigns the next line as a variable
+	
+	if line.startswith(">"): #if the line starts with a ">"
+		heading = line #assigns the line as a variable 'heading'
+		aaSeq = nextLine.replace("\n","") #assigns the next line to a variable 'aaSeq
+		
+		splitHeading = heading.split() #split the heading into separate strings
+		proteinName = splitHeading[0][1:]  #assign protein name to a variable from the position [1] of split heading, ie excluding '>'
+		peptideNumber = splitHeading[2] #assign peptide number to a variable
+		missedCleaves = splitHeading[3][7]
+		proteinPosition = splitHeading[4]
+		enzyme = splitHeading[5]
 
-# create dictionary of each peptide, using fasta heading as the keys
-# assign the peptide number (ie if its the 1st, second etc) to the first[0] item in the list
-# assign the assigns the correct m/c ratio value for each amino acid in the peptide string # to a total
-# value at position 2 [1] of the list
-# assigns a default value of 1 for charge to 3rd [2] list item
-# assign a value of p to 4th position [3]. can this be taken from 2's? work out how to do anyway.
-# assign the sequence string to 4th positon in the dictionary 
-# 
-# output dictionary in table format
+	residueValue = [] # creates a new list, residueValue, in which to store peptide masses
+	for count in aaSeq:  #for each character in my string 
+		residueValue.append(massdictionary[count]) #add each aa mass to list
+	residueValueList = (residueValue) #assigns the aa mass list to a new variable
+	peptideValue = sum(residueValueList) #adds up the total value of masses in the list
+	peptideValue2sf = format(peptideValue, '.2f') #saves the result to 2sf. NOTE let no. of s.f. be 2 or 3 depending on dictionary input
+
+	proteinBank.append({ 'Protein Name' : proteinName ,
+	'Number' : peptideNumber, 'Mass' : peptideValue2sf, 
+	'MissedCleaves' : missedCleaves, 'Position': proteinPosition, 
+	'Enzyme':enzyme, 'Sequence' :  aaSeq })  #store all of the values in the list, under dictionary with variables a key headings
+
+print(proteinBank)
+
 
 fileObj.close() #close file
 
-#
 
-#command line option for doubly or triply charged ions? default is 1
+
+#argument for doubly or triply charged ions? default is 1
+
+
+
+
+
+
+
