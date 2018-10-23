@@ -26,8 +26,7 @@ def read_proteins(sys_argv1): #processing task 1: process lines in .fasta file i
 
 proteins = read_proteins(sys_argv1)
 
-#Create a function (e.g. digest) that can operate on my list of 2-tuples.
-
+#create a dictionary consisting of key = enzyme code, and value = cleavage pattern
 recog_seq = {
             't' : 'K' or 'R',
             'l' : 'K',
