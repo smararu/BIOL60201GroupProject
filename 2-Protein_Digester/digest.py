@@ -25,27 +25,26 @@ def read_proteins(sys_argv1): #processing task 1: process lines in .fasta file i
     return proteins
 
 proteins = read_proteins(sys_argv1)
-print(proteins)
 
 #Create a function (e.g. digest) that can operate on my list of 2-tuples.
-def digest(proteins, enzyme): #defining a function called digest which takes arguments proteins and enzyme
+
+def digest(proteins, enzyme):
     peptides=[]
-    peptide_num = 1
+    peptide_num = 0
     i = 0
     if enzyme == 't':
-        print('you chose Trypsin!')
-        string =(proteins[i][1])
-        print(string)
-        i+= 1
+            for ([i][1]) in proteins
+                string =(proteins[i][1])
+                print(string)
+                peptide_num+=1
+                print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
+                i+= 1
     if enzyme == 'l':
         print('you chose Endoproteinase Lys-C!')
-        string =(proteins[i][1])
     if enzyme == 'a':
         print('you chose Endoproteinase Arg-C!')
-        string =(proteins[i][1])
     if enzyme == 'e':
         print('you chose V8 proteinase (Glu-C)!')
-        string =(proteins[i][1])
     return
 
 peptides = digest(proteins, enzyme)
