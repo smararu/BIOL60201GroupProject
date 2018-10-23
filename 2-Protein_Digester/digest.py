@@ -33,18 +33,23 @@ def digest(proteins, enzyme):
     peptide_num = 0
     i = 0
     if enzyme == 't':
+        cleavage_start = 'R'
+    if enzyme == 'l':
+        cleavage_start = 'K'
+    if enzyme == 'a':
+        cleavage_start = 'K'
+    if enzyme == 'e':
+        cleavage_start = 'E'
+    for protein in proteins:
+        name = protein[0]
+        sequence = protein[1]
+        if cleavage_start in sequence:
             for ([i][1]) in proteins
                 string =(proteins[i][1])
                 print(string)
                 peptide_num+=1
                 print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
                 i+= 1
-    if enzyme == 'l':
-        print('you chose Endoproteinase Lys-C!')
-    if enzyme == 'a':
-        print('you chose Endoproteinase Arg-C!')
-    if enzyme == 'e':
-        print('you chose V8 proteinase (Glu-C)!')
     return
 
 peptides = digest(proteins, enzyme)
