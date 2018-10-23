@@ -14,7 +14,7 @@ def read_proteins(sys_argv1): #processing task 1: process lines in .fasta file i
     sequence = ''
     for line in open(sys_argv1):
         if line.startswith('>'):
-            if sequence !='':
+            if sequence:
                 proteins.append((protein_name,sequence))
                 sequence =''
             protein_name = line[1:-1] #remove newline character at end
@@ -28,34 +28,33 @@ proteins = read_proteins(sys_argv1)
 
 #Create a function (e.g. digest) that can operate on my list of 2-tuples.
 
+recog_seq = {
+            't' : 'K' or 'R',
+            'l' : 'K',
+            'a' : 'R',
+            'e' : 'E'
+    }
+
 def digest(proteins, enzyme):
     peptides=[]
     peptide_num = 0
     i = 0
-    if enzyme == 't':
-        cleavage_start = 'R'
-    if enzyme == 'l':
-        cleavage_start = 'K'
-    if enzyme == 'a':
-        cleavage_start = 'K'
-    if enzyme == 'e':
-        cleavage_start = 'E'
-    for protein in proteins:
-        name = protein[0]
-        sequence = protein[1]
+    cleavage_start = recog_seq[enzyme]
+    print(cleavage_start)
+    for name, sequence in proteins:
         if cleavage_start in sequence:
-            for ([i][1]) in proteins
-                string =(proteins[i][1])
-                print(string)
-                peptide_num+=1
-                print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
-                i+= 1
+            string = re.split(cleavage_start, sequence)
+            peptide_num+=1
+            print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
+            print(string)
+            i+= 1
+        else:
+            string = sequence
+            print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
+            print(string)
     return
 
 peptides = digest(proteins, enzyme)
-
-#take first tuple in proteins
-#scan along j (sequence), until a certain point, then split j!
 
 #my sequences end in *
 #if trypsin, identify first peptide at Lysine (K) or Arginine (R), and if the next amino acid is not Proline (P)
