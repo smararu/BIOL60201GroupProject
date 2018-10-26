@@ -19,7 +19,7 @@ def read_proteins(sys_argv1): #processing task 1: process lines in .fasta file i
                 sequence =''
             protein_name = line[1:-1] #remove newline character at end
         else:
-            line = line.strip('\n')
+            line = line.rstrip('\n')
             sequence += line #append my sequence line to sequence
     proteins.append((protein_name,sequence)) #p-to-do: could change to handle malformed files here
     return proteins
@@ -28,7 +28,7 @@ proteins = read_proteins(sys_argv1)
 
 #create a dictionary consisting of key = enzyme code, and value = cleavage pattern
 recog_seq = {
-            't' : 'K' or 'R',
+            't' : re.compile('K|R'),
             'l' : 'K',
             'a' : 'R',
             'e' : 'E'
@@ -41,16 +41,16 @@ def digest(proteins, enzyme):
     cleavage_start = recog_seq[enzyme]
     print(cleavage_start)
     for name, sequence in proteins:
-        if cleavage_start in sequence:
+        #if cleavage_start in sequence:
             string = re.split(cleavage_start, sequence)
             peptide_num+=1
             print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
-            print(string)
+            print('string', string)
             i+= 1
-        else:
-            string = sequence
-            print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
-            print(string)
+        #else: #something may be wrong with this
+            #string = sequence
+            #print(f"> {proteins[i][0]} peptide {peptide_num} {enzyme}")
+            #print('string', string)
     return
 
 peptides = digest(proteins, enzyme)
