@@ -18,9 +18,8 @@ def read_proteins(sys_argv1): #processing task 1: process lines in .fasta file i
                 proteins.append((protein_name,sequence))
                 sequence =''
             protein_name = line[1:-1] #remove newline character at end
-            #replace any whitespace in protein_name with _
         else:
-            line = line.rstrip('\n')
+            line = line.rstrip('\n*')
             sequence += line #append my sequence line to sequence
     proteins.append((protein_name,sequence)) #p-to-do: could change to handle malformed files here
     return proteins
@@ -46,6 +45,8 @@ def digest(proteins, enzyme):
         for i, j in peptide:
             full_peptide = i + j
             full_peptides.append(full_peptide)
+        if peptides_unpaired[-1]: #if the cleavage site is not at the end of the protein, zip will leave off the final peptide.
+            full_peptides.append(peptides_unpaired[-1])
         for peptide in full_peptides:
             peptide_num += 1 #seq_peptides.len gives length
             peptides.append({'name': name, 'peptide_num': peptide_num, 'peptide': peptide})
