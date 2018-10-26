@@ -36,19 +36,19 @@ recog_seq = {
     }
 
 def digest(proteins, enzyme):
-    full_peptides = []
     peptides = []
-    peptide_num = 0
     pattern = recog_seq[enzyme]
     for name, sequence in proteins:
+        full_peptides=[]
+        peptide_num = 0
         peptides_unpaired = re.split(pattern, sequence)
         peptide = zip(peptides_unpaired[::2], peptides_unpaired[1::2]) #run zip on seq_peptides to put pairs together.
         for i, j in peptide:
             full_peptide = i + j
             full_peptides.append(full_peptide)
-            for peptide in full_peptides:
-                peptide_num += 1 #seq_peptides.len gives length
-                peptides.append({'name': name, 'peptide_num': peptide_num, 'peptide': peptide})
+        for peptide in full_peptides:
+            peptide_num += 1 #seq_peptides.len gives length
+            peptides.append({'name': name, 'peptide_num': peptide_num, 'peptide': peptide})
     return peptides
 
 peptides = digest(proteins, enzyme) #It's a list of dictionaries!!!!
