@@ -20,17 +20,11 @@ for line in lines:
     enzyme_us = name.str.split(None, 1)[0]
     print(enzyme_us)
     masses.append(mzf) #agregates mzf values to masses list
-    
-    #print(masses)
-    #peptide_data.append({'t': "Trypsin",'l':"Endoproteinase Lys-C",'a':"Endoproteinase Arg-C",'e':"V8 proteinase (Glu-C)"})
-
+   
+#peptide_data.append({'t': "Trypsin",'l':"Endoproteinase Lys-C",'a':"Endoproteinase Arg-C",'e':"V8 proteinase (Glu-C)"})
 plt.hist(masses,bins=30)
 plt.show()
 #sum(peptide['mass'] for peptide in peptide_data)
-
-# (1.3) Working file
-histf=open('result4.csv','w+') #open a file, 'w+' creates file to print results from task 4
-
 
 # (2) Analysis
 # (2.1) User defines to analyze all values of mz or a range of values
@@ -82,23 +76,6 @@ else:
     
 # (4) Output
 # (4.1) Output full analysis
-def PrintToFile(outputFile, framedSequence):
-    numberOfFrames = len(framedSequence)
-    # outputFile = "outputFile.txt"
-
-    with open(outputFile, 'w') as f:
-        
-        # print('Filename:', outputFile, file=f) 
-        for frameNumber, frames in enumerate(framedSequence):
-            frameNumber = framedSequence.index(frames) #change index
-            for openReadingFrame, aminoAcids in enumerate(frames):
-                print (">CLAUD_F" + str(frameNumber+1) + "_" + str(openReadingFrame+1).zfill(4), file=f)
-                print (aminoAcids, file=f)
-    
-finalFrames = 0
-finalFrames = TranslateORF(range(1,7))
-# print (finalFrames)
-PrintToFile("outputFile.txt", finalFrames)
 
 # (4.2) Output range analysis
 #print(type(mz))
