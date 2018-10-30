@@ -74,7 +74,6 @@ for index in range(0, len(lines),2): # for each of the lines in the range, count
 		
 	print(proteinName.ljust(10), peptideNumber.rjust(2), peptideValue4sf.rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq, file=outFile)
 
-# 
 
 outFile.close()
 fileObj.close() #close file
