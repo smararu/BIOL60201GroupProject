@@ -1,7 +1,16 @@
-#Open file Task 3 ('dummy.pepmasses')
-f = open('dummy.pepmasses.fa', 'r')
+# Required libraries
+import numpy as np # numpy library for work with numbers, lists, arranges
+import matplotlib.pyplot as plt #matplotlib.pyplot library for work plots, graphs
+
+#Open file Task 3 ('dummy.pepmasses') and read each line
+InputFile = '../project/dummy.pepmasses' #imports FASTA file from task 3 
+f= open(InputFile,'r') #open INPUT FILE
+lines = f.readlines() #read each line of INPUT FILE f
+nlines = len(lines) #determines the length of "lines", count the number of lines
+print ('Total number of proteins to analyze= ', nlines) #output "nlines = number" just to be sure it is reading
 
 #Read mass column
+
   ##Separate results by frame (Task 1 gives only Frame with the largest peptide?)
   ##Separate results by enzyme (chose a enzyme from a list?)
 #Define mass column ranges (user entry input())
