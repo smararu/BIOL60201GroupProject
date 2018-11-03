@@ -22,9 +22,8 @@ def read_masses(filename):
     return masses
 
 masses=read_masses(args.filename)
-print(masses) #test print to check masses extracted correctly from file and read into list masses
 
-def analysis(analysis):
+def analysis(analysis, range):
     if args.analysis=='range': # if user choose range analysis
         list = args.range
         min = list[0] #can I assign type as int?
@@ -34,14 +33,14 @@ def analysis(analysis):
         total_mass = 0
         #calculate mean
         for mzf in masses:
-           if mzf > min and mzf < max: #mz values within the range given by user
+            if mzf > min and mzf < max: #mz values within the range given by user
                 number_pep = number_pep + 1 #count of events on the given range with IF statement
                 total_mass += mzf
                 meanmz_inrange = total_mass / number_pep
-        print('Selected range has ', number_pep, '\t and mean mz value of: ', meanmz_inrange)
-        return meanmz_inrange
+        result = f'Range {list} has {number_pep} peptides and mean m/z value {meanmz_inrange}'
+        return result
 
-result=analysis(args.analysis)
+result=analysis(args.analysis, args.range)
 
 output=open(f'{args.output}','w')
-print(result)
+print(result, file=output)
