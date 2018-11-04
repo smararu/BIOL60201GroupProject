@@ -42,8 +42,7 @@ if args.c == '3':  #if argument for -c is 3
 elif args.c == '2':
 	charge = 2
 else:
-	charge = 1
-
+	charge = 1 
 
 lines = fileObj.readlines() # read each line in file, assigns each line as an item in array 'lines'
 for index in range(0, len(lines),2): # for each of the lines in the range, counting in increments of 2
@@ -54,7 +53,7 @@ for index in range(0, len(lines),2): # for each of the lines in the range, count
 		heading = line #assigns the line as a variable 'heading'
 		aaSeq = nextLine.replace("\n","") #assigns the next line to a variable 'aaSeq' and removing new line codes
 		
-		# make this into a tuple??
+	 
 		splitHeading = heading.split() #split the heading into separate strings
 		proteinName = splitHeading[0][1:]  #assign protein name to a variable from the position [1] of split heading, ie excluding '>'
 		peptideNumber = splitHeading[2] #assign peptide number to a variable
@@ -64,20 +63,19 @@ for index in range(0, len(lines),2): # for each of the lines in the range, count
 
 	residueValue = [] # creates a new list, residueValue, in which to store peptide masses
 	for count in aaSeq:  #for each character in my string 
+		protonMass = charge
 		residueValue.append(massDictionary[count])   # all these 3 in same command???
-		residueValue.append(massDictionary['proton'])
-		residueValue.append(massDictionary['H2O']) #add each aa mass to list
 		residueValueList = (residueValue) #assigns the aa mass list to a new variable
 	
 	peptideValue = sum(residueValueList)#adds up the total value of masses in the list
-	peptideValue4sf = format(peptideValue, '.4f')  #saves the result to 4dp.
-		
-	print(proteinName.ljust(10), peptideNumber.rjust(2), peptideValue4sf.rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq, file=outFile)
+	peptideValueFull = float(peptideValue) + charge + massDictionary['H2O']
+	peptideValue4sf = format(peptideValueFull, '.4f')  #saves the result to 4dp.
+	
+	print(proteinName.ljust(20), peptideNumber.rjust(2), str(peptideValue4sf).rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq, file=outFile)
 
 
 outFile.close()
 fileObj.close() #close file
-
 
 #peptide 1, position 1 is N terminal
 #peptide nMAX last position is C terminal which will have a star

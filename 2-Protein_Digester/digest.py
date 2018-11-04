@@ -1,49 +1,67 @@
-#Ask user for input: Fasta formatted protein sequences, labelled by protein number (Test with 'dummy.fasta')
-    # Check that the input is a fasta file! (validate)
-#read in fasta file
-#assign to an object (thing)
-
-filename = input("Please input your file name and format: ")
-print('You entered {0}'.format(filename)) #print as a check!
-    #errors might include: filename is not in the same directory, full path not specified, file is not in fasta format, file is in fasta format but does not contain expected amino acid codes.
-fread = open('{0}'.format(filename),'r')
-
-#Ask user for choice of four digesting enzymes: Trypsin, Endoproteinase Lys-C, Endoproteinase Arg-C, V8 proteinase (Glu-C)
-    # (restrict all other inputs that do not match these options, return error message)
-#read in user choice
-
-enzyme = input("Please input your choice of enzyme (from: trypsin, endoproteinase_LysC, endoproteinase_ArgC, V8_proteinase_GluC): ")
-    #errors might include user inputting invalid enzyme name
-print('You entered {0}'.format(enzyme)) #print as a check!
-
-#Later work: replace the section above with argparse statements to take in user information.
-
-#Create a function (e.g. digest) that contains the common elements, and use the varying bits as parameters!
-#parameters are the variable 'enzyme' (name of enzyme)
-#take each protein each time in sequence.
-
-
-lines = fread.readlines() #read all lines of the file to a list called lines
-
+import sys
 import re
-def digest(enzyme): #defining a function called digest which takes an argument enzyme
-    peptide_num = 1 #set peptide number to 1
+
+#I want my command line input to look like:
+    #python digest.py -enzyme foo.fasta
+
+#To-do: use argparse module?
+sys_argv1 = sys.argv[1]
+enzyme = sys.argv[2]
+
+def read_proteins(sys_argv1): #processing task 1: process lines in .fasta file into a list of 2-tuples.
+    proteins= []
     protein_name = ''
-    for line in lines:
+    sequence = ''
+    for line in open(sys_argv1):
         if line.startswith('>'):
-            protein_name = line[1:]
-        # no protein name, start scanning with REGEX!
-            print(protein_name)
-    return protein_name #return something at the end of the function
-    #concatenate protein_name and peptide_num to produce new header line starting >
+            if sequence:
+                proteins.append((protein_name,sequence))
+                sequence =''
+            protein_name = line[1:-1] #remove newline character at end
+        else:
+            line = line.rstrip('\n*')
+            sequence += line #append my sequence line to sequence
+    proteins.append((protein_name,sequence)) #p-to-do: could change to handle malformed files here
+    return proteins
 
-digest(enzyme)
+proteins = read_proteins(sys_argv1)
 
-#str.startswith will return True/False if my string starts with a thing. so for each line it can return true/false for >
+#create a dictionary consisting of key = enzyme code, and value = cleavage pattern
+recog_seq = {
+            't' : re.compile('([KR])(?!P)'),
+            'l' : re.compile('(K)(?!P)'),
+            'a' : re.compile('(R)(?!P)'),
+            'e' : re.compile('(E)(?!P)')
+    }
 
-#my sequences start with > and end in *
-#if trypsin, identify first peptide at Lysine (K) or Arginine (R), and if the next amino acid is not Proline (P)
-#save sequence up to that point as protein 1 peptide 1
-#take remaining sequence and repeat process
-#when all of protein 1 has been fragmented, move to protein 2 and repeat process
-#when the list is finished, output all fragments to a file in fasta format (see Output format below)
+def digest(proteins, enzyme):
+    peptides = []
+    pattern = recog_seq[enzyme]
+    for name, sequence in proteins:
+        full_peptides=[]
+        peptide_num = 0
+        peptides_unpaired = re.split(pattern, sequence)
+        peptide = zip(peptides_unpaired[::2], peptides_unpaired[1::2]) #run zip on seq_peptides to put pairs together.
+        for i, j in peptide:
+            full_peptide = i + j
+            full_peptides.append(full_peptide)
+        if peptides_unpaired[-1]: #if the cleavage site is not at the end of the protein, zip will leave off the final peptide.
+            full_peptides.append(peptides_unpaired[-1])
+        for peptide in full_peptides:
+            peptide_num += 1 #seq_peptides.len gives length
+            peptides.append({'name': name, 'peptide_num': peptide_num, 'peptide': peptide})
+    return peptides
+
+peptides = digest(proteins, enzyme) #It's a list of dictionaries!!!!
+
+output=open('output.fasta','w')
+for peptide in peptides: #for loop to transfer list of dictionaries into .fasta format
+    print(f">{peptide['name']}\t{peptide['peptide_num']}\t'missed=0'\t{enzyme}\n{peptide['peptide']}", file =output)
+
+#bonus task 1 (cleavages):
+#ensure Charles receives information in the form:
+    #>protein_name peptide_num missed=int enzyme
+    #'SEQUENCESTRING'
+
+    #>ClAUD_F1_1 peptide 1 missed=2 enzyme t
+    #GJAIGOEGKDGLLDGD
