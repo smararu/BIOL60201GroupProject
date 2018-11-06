@@ -1,0 +1,86 @@
+# required libraries 
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics
+from statistics import stdev
+
+# read the file
+f = open('../project/dummy.pepmasses', 'r')
+lines = f.readlines()
+
+# create a list for the masses
+masses = []
+# for each line in the file...
+    # split the line
+for line in lines:
+    (name,number,mass_to_charge,z,p,prot_sequence)=line.split() # objects from list as strings (name,number,mass_to_charge,z,p,enzyme,prot_sequence)=line.split()
+    mzf=float(mass_to_charge)
+    # add the mass to a list
+    masses.append(mzf)
+
+# ask user to define analysis
+select=input('Write "range"  to define the a range of values or "full" to analyze whole mz values')
+
+# if user choose range analysis
+if select=='range':
+    # ask user for range values
+    Min= int(input('Write the MINIMUM VALUE OF MASS you want to analyze'))
+    Max= int(input('Write the MAXIMUM VALUE OF MASS you want to analyze'))
+    
+    #separate by enzyme
+    
+    # create initial numeber of peptides and sum of mass to calculate mean mass in range
+    number_pep=0
+    total_mass = 0
+    # calculate mean
+    for mzf in masses:
+        if mzf > Min and mzf < Max: #mz values within the range given by user
+            number_pep = number_pep + 1 #count of events on the given range with IF statement
+            total_mass += mzf
+    meanmz_inrange = total_mass / number_pep
+    # temp print 
+    print('Selected range has ', number_pep, '\t and mean mz value of: ', meanmz_inrange)
+    # calculate error
+    standard_dev= stdev(masses)
+    print('standar deviation=', standard_dev)
+    # print an histogram with 30 bins
+    bins = np.linspace(Min, Max, 30, endpoint=True)
+    plt.hist(masses,bins, rwidth=0.9,color='#607c8e')
+    plt.title('Peptides Mass to charge in given range')
+    plt.xlabel('Mass to charge [Da]')
+    plt.ylabel('Number of peptides')
+    plt.show()
+    
+    # ask user for a certain pattern in range analysis
+    
+    
+# if user choose bin analysis
+else:
+    # ask user for number of bins
+    number_bins = input('Write the number of bins for your histogram')
+    
+    #separate by enzyme
+    
+    # calculate bin width 
+    bin_width = ( min(masses) + max(masses) ) / len(masses)
+    # define sum of masses for each bin
+    sum_bin_masses = 0
+    count_bin_masses = 0
+    for bin_n in (1, int(number_bins)):
+        for mass in (0, min(masses) + bin_n * bin_width):
+            if mass >= min(masses) and mass <= min(masses) + mass*bin_n:
+                sum_bin_masses = sum_bin_masses + mass
+                count_bin_masses = count_bin_masses + 1
+                mean_each_bin = sum_bin_masses / count_bin_masses
+    print('Bin:', bin_n,'\t Mass mean = ', mean_each_bin)
+    # print an histogram with 30 bins
+    bins = np.linspace(Min, Max, number_bins, endpoint=True)
+    plt.hist(masses,bins, rwidth=0.9,color='#808080')
+    plt.title('Peptides Mass to charge in given range')
+    plt.xlabel('Mass to charge [Da]')
+    plt.ylabel('Number of peptides')
+    plt.show()
+    
+    # ask user for a certain pattern in bin analysis
+
+# output file(s)
