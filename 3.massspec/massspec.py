@@ -24,7 +24,6 @@ averageMassesDict = {'A' :  71.08, 'C' : 103.14, 'D' : 115.09,  #dictionary of a
 'W' : 186.21, 'Y' : 163.18, '*' : 0.0, 
 'H2O' : 18.0153, 'proton' : 1}
 
-
 import argparse
 options = argparse.ArgumentParser()  # introduce arguments 
 options.add_argument("-i", help="choose either 'monoisotopic' or 'averageisotopic' mass values ['m','a']", default='a') #arguement for either monoisotopic or average isotopic masses
@@ -51,28 +50,21 @@ elif args.t == 'c':
 else:
 	terminal = 'none'  # default to arbitrary string, 'none'
 
-
-#Trypsin: cuts at Lysine (Lys, K) or Arginine (Arg, R) unless the next amino acid is Proline (Pro, P). 
-#Endoproteinase Lys-C: cuts at Lysine (Lys, K) unless the next amino acid is Proline (Pro, P). 
-#Endoproteinase Arg-C: cuts at Arginine (Arg, R) unless the next amino acid is Proline (Pro, P).
-#V8 proteinase (Glu-C): cuts at Glutamic acid (Glu, E) unless the next amino acid is Proline (Pro, P)
+peptideDictionary = {} #initiates a dictionary used to count the number of each type of peptide
+terminalDictionary = {} #initiates a dictioary used to store n or c terminal peptide
 
 lines = fileObj.readlines() # read each line in file, assigns each line as an item in array 'lines'
 for index in range(0, len(lines),2): # for each of the lines in the range, counting in increments of 2
-	line = lines[index] # assigns each line as a variale
-	nextLine = lines[index + 1] #assigns the next line as a variable
+	heading = lines[index] # assigns each alternate line as a variale 'heading'
 	
-	if line.startswith(">"): #if the line starts with a ">" 
-		heading = line #assigns the line as a variable 'heading'
-		aaSeq = nextLine.replace("\n","") #assigns the next line to a variable 'aaSeq' and removing new line codes
-	#remove hangover line (if line starts with) and test 	
-	 
-		splitHeading = heading.split() #split the heading into separate strings
-		proteinName = splitHeading[0][1:]  #assign protein name to a variable from the position [1] of split heading, ie excluding '>'
-		peptideNumber = splitHeading[1] #assign peptide number to a variable
-		missedCleaves = splitHeading[2][8]
-		enzyme = splitHeading[3]
+	splitHeading = heading.split() #split the heading into separate strings
+	peptideName = splitHeading[0][1:]  #assign protein name to a variable from the position [1] of split heading, ie excluding '>'
+	peptideNumber = splitHeading[1] #assign peptide number to a variable
+	missedCleaves = splitHeading[2][8]
+	enzyme = splitHeading[3]
 
+	nextLine = lines[index + 1] #assigns the next line as a variable
+	aaSeq = nextLine.replace("\n","") #assigns the next line to a variable 'aaSeq', removing new line codes 
 	residueValue = [] # creates a new list, residueValue, in which to store peptide masses
 	for count in aaSeq:  #for each character in my string 
 		protonMass = charge
@@ -84,49 +76,34 @@ for index in range(0, len(lines),2): # for each of the lines in the range, count
 	peptideValue4sf = format(peptideValueFull, '.4f')  #saves the result to 4dp.
 	
 	def outputPrint():
-		print(proteinName.ljust(20), peptideNumber.rjust(2), str(peptideValue4sf).rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq, file=outFile) 
+		print(peptideName.ljust(20), peptideNumber.rjust(2), str(peptideValue4sf).rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq, file=outFile) 
 		#above  defines  function to print the peptide information to output file
+	
+#	if terminal = 'n':
+#		if peptideName not in terminalDictionary:
+#			terminalDictionary[peptideName] = aaSeq
 
-	#Bonus task !WRONG!
-	if terminal == 'n':   #if the user has requested n-terminal peptides using -t argument 
-		if len(aaSeq) > 1:   # if the peptide is greater than 1 aAcid in length
-			if enzyme == 't':	# if trypsin is requested as the enzyme
-				if 'K' in aaSeq[0] and 'P' not in aaSeq[1]:  # tests to see if K is first aAcid (and P does not follow)
-					outputPrint()   # then output the line
-				elif 'R' in aaSeq[0] and 'P' not in aaSeq[1]: #test for R is first aAcid
-					outputPrint()
-			elif enzyme == 'l': 
-				if 'K' in aaSeq[0] and 'P' not in aaSeq[1]:
-					outputPrint()
-			elif enzyme == 'a':
-				if 'R' in aaSeq[0] and 'P' not in aaSeq[1]:
-					outputPrint()
-			elif enzyme == 'e':
-				if 'E' in aaSeq[0] and 'P' not in aaSeq[1]:
-					outputPrint()
-		elif len(aaSeq) = 1:  # if the aAcid 1  aAcid in length
-			if enzyme == 't':	#then repeat previous if statement, however search for 'P' at second position is removed
-				if 'K' in aaSeq:
-					outputPrint()
-				elif 'R' in aaSeq:
-					outputPrint()
-			elif enzyme == 'l':
-				if 'K' in aaSeq:
-					outputPrint()
-			elif enzyme == 'a':
-				if 'R' in aaSeq[0]:
-					outputPrint()
-			elif enzyme == 'e':
-				if 'E' in aaSeq[0]:
-					outputPrint()
-	elif terminal == 'c':  # if the user requests c-terminal peptides using -t argument
-		if '*' in aaSeq[-1]:   # if stop code, *, is at the final position
-			outputPrint()   # print the peptide
-	else:				# else, if no terminal peptide function not requested, print all 
-		outputPrint()
 
-outFile.close()
+	if peptideName not in peptideDictionary: # if the peptide is not already in dictionary
+		peptideDictionary[peptideName] = 1  # creates a key of peptide and assigns it a value of 1
+	else: 									# else, if the peptide has been encountered already, add 1
+		peptideDictionary[peptideName] += 1 
+
+
 fileObj.close() #close file
+outFile.close()
+
+statsFile = open('stats.csv', 'w') #initiates a new output file for stats
+peptideNumberList= []  #inititates a new list to store peptide numbers in
+totalProteins = len(peptideDictionary)  # counts the number of entries in peptideDictionary
+print('There are',totalProteins, 'digested proteins') #prints the number of proteins
+for keys in peptideDictionary:  #for each protein in the dictionary 
+	peptideNumberList.append(peptideDictionary[keys])  # add the number of peptides
+	print(keys, ',',peptideDictionary[keys], file=statsFile)
+totalPeptides = sum(peptideNumberList)  # sums the total value of these peptides 
+print('There are',totalPeptides,'peptides in total')  # prints this total
+averagePeptides = format((totalPeptides / totalProteins),'.4f')  # determines the average peptides per protein to 4.dp
+print('The average number of peptides per protein for',file ,'is', averagePeptides)  #prints the average
 
 #Bonus task: create dictioary, if peptide name not there, add seq to dictionary
 # if not there, overwrite previous 
