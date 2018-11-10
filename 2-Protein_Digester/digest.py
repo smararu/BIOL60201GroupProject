@@ -51,19 +51,19 @@ def digest(sequence, enzyme):
     return peptides
 
 def missed(peptides, missed):
+    peptides_to_add=[]
     peptides_missed = []
     if args.missed ==0:
         for peptide in peptides:
             peptides_missed.append(peptide)
-    elif args.missed ==1:
-        for peptide in peptides:
-            peptides_missed.append(peptide)
-        for i in range (len(peptides)-1):
-            peptide_missed = (peptides[i]+peptides[i+1])
-            peptides_missed.append(peptide_missed)
+    else:
+        for n in range(1, args.missed + 2):
+            for i in range(len(peptides) - n + 1):
+                peptides_to_add=(peptides[i:i+n])
+                print(peptides_to_add, i, n)
+                ''.join(peptides_to_add)
     return peptides_missed
 
-#need to reimplement peptide num
 output=open(f'{args.output}','w')
 proteins = read_proteins(args.filename)
 for name, sequence in proteins:
