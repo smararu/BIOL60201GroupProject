@@ -1,16 +1,10 @@
-#SATURDAY
-#FIX BUG FOUND - REPEATED OUTPUT.
-#to-do: implement shebang
-#to-do: implement missed cleavages
-#error trapping, warnings, reporting.
-#sensible variable names
-
 #!/usr/bin/env python 3
 #
+
 import re, argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--filename', type=str, default='dummy.fasta',
+parser.add_argument('-f', '--filename', type=str, default='dummy.fasta',
     help='the filename of .fasta file containing protein sequence(s)')
 parser.add_argument('-e', '--enzyme',
     help='the name of an enzyme [t,l,a,e]', type=str, default='t')
@@ -20,23 +14,21 @@ parser.add_argument('-o','--output', type=str,
     help='the output name of the file', default='output.fasta')
 args=parser.parse_args()
 
-def read_proteins(input): #processing task 1: process lines in .fasta file into a list of 2-tuples.
+def read_proteins(filename): #processes lines in .fasta file into a list of 2-tuples.
     proteins= []
     protein_name = ''
     sequence = ''
     for line in open(args.filename):
-        if line.startswith('>'):
+        if line.startswith('>'): #header lines in a .fasta file will always begin >
             if sequence:
                 proteins.append((protein_name,sequence))
-                sequence =''
-            protein_name = line[1:-1] #remove newline character at end
-        else:
+                sequence ='' #sequence is reset to an empty string for each new protein
+            protein_name = line[1:-1] #removes first > and unwanted newline character at end of header line
+        else: #any line not beginning > will be sequence in a .fasta file.
             line = line.rstrip('\n*')
-            sequence += line #append my sequence line to sequence
-    proteins.append((protein_name,sequence)) #p-to-do: could change to handle malformed files here
+            sequence += line #appends my sequence line to sequence
+    proteins.append((protein_name,sequence))
     return proteins
-
-proteins = read_proteins(args.filename)
 
 #create a dictionary consisting of key = enzyme code, and value = cleavage pattern
 recog_seq = {
@@ -46,46 +38,37 @@ recog_seq = {
             'e' : re.compile('(E)(?!P)')
     }
 
-def digest(proteins, enzyme):
+def digest(sequence, enzyme):
     peptides = []
     pattern = recog_seq[args.enzyme]
-    for name, sequence in proteins:
-        full_peptides=[]
-        peptide_num = 0
-        peptides_unpaired = re.split(pattern, sequence)
-        peptide = zip(peptides_unpaired[::2], peptides_unpaired[1::2]) #run zip on seq_peptides to put pairs together.
-        for i, j in peptide:
-            full_peptide = i + j
-            full_peptides.append(full_peptide)
-        if peptides_unpaired[-1]: #if the cleavage site is not at the end of the protein, zip will leave off the final peptide.
-            full_peptides.append(peptides_unpaired[-1])
-        for peptide in full_peptides:
-            peptide_num += 1 #seq_peptides.len gives length
-            peptides.append({'name': name, 'peptide_num': peptide_num, 'peptide': peptide})
+    peptides_unpaired = re.split(pattern, sequence)
+    peptide = zip(peptides_unpaired[::2], peptides_unpaired[1::2]) #run zip on seq_peptides to put pairs together.
+    for i, j in peptide:
+        full_peptide = i + j
+        peptides.append(full_peptide)
+    if peptides_unpaired[-1]: #if the cleavage site is not at the end of the protein, zip will leave off the final peptide.
+        peptides.append(peptides_unpaired[-1])
     return peptides
 
-peptides = digest(proteins, args.enzyme) #It's a list of dictionaries!!!!
-
-#def missed(proteins, missed):
-#    peptides_missed = []
-#    for peptide in peptides:
-#        peptides_missed.append(peptides[1], peptides[2], peptides[1]+peptides[2])
-#    return peptides_missed
-
-#peptides_missed=missed(proteins,args.missed)
-#print(peptides_missed)
+def missed(peptides, missed):
+    peptides_to_add=[]
+    peptides_missed = []
+    if args.missed ==0:
+        for peptide in peptides:
+            peptides_missed.append(peptide)
+    else:
+        for n in range(1, args.missed + 2):
+            for i in range(len(peptides) - n + 1):
+                peptides_to_add=(peptides[i:i+n])
+                peptides_missed.append(''.join(peptides_to_add))
+    return peptides_missed
 
 output=open(f'{args.output}','w')
-for peptide in peptides: #for loop to transfer list of dictionaries into .fasta format
-    print(f">{peptide['name']}\t{peptide['peptide_num']}\t'missed={args.missed}'\t{args.enzyme}\n{peptide['peptide']}", file =output)
-
-#bonus task 1 (missed cleavages):
-#list for 1 missed cleavage will look like:
-#peptide 1 + peptide 2 + peptide 3 (1+2) + peptide 4 + peptide 5 (2+4) + peptide 6 + peptide 7 (4+6) + peptide 8 + peptide 9 (6+8)
-
-#list for 2 missed cleavages will look like:
-#peptide 1 + peptide 2 + peptide 3 (1+2) + peptide 4 + peptide 5 (3+4) + peptide 6 + peptide 7 (2)
-
-#ensure Charles receives information in the form:
-    #>ClAUD_F1_1 peptide 1 missed=2 enzyme t
-    #GJAIGOEGKDGLLDGD
+proteins = read_proteins(args.filename)
+for name, sequence in proteins:
+    peptides = digest(sequence, args.enzyme) #It's a list of lists!!!!
+    peptides_missed=missed(peptides, args.missed)
+    peptide_num=0
+    for peptide in peptides_missed: #for loop to transfer list of dictionaries into .fasta format
+        peptide_num+=1
+        print(f">{name}\t{peptide_num}\tmissed={args.missed}\t{args.enzyme}\n{peptide}", file =output)
