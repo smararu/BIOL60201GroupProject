@@ -36,9 +36,9 @@ if args.i == 'm':   #if the user chooses monoisotopic masses
 else:
 	massDictionary = averageMassesDict  # otherwise, default to average masses
 
-if args.c == '3':  #if argument for -c is 3
+if args.c == '3':  #if user chooses charge to be 3
 	charge = 3   # charge is 3
-elif args.c == '2': 
+elif args.c == '2': #likewise for 2
 	charge = 2
 else:
 	charge = 1 # default to 1
@@ -77,33 +77,46 @@ for index in range(0, len(lines),2): # for each of the lines in the range, count
 	
 	def outputPrint():
 		print(peptideName.ljust(20), peptideNumber.rjust(2), str(peptideValue4sf).rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq, file=outFile) 
+	sString =  peptideName.ljust(20), peptideNumber.rjust(2), str(peptideValue4sf).rjust(10), missedCleaves.rjust(1), repr(charge).rjust(1), enzyme.rjust(1), aaSeq
+
 		#above  defines  function to print the peptide information to output file
 	
-#	if terminal = 'n':
-#		if peptideName not in terminalDictionary:
-#			terminalDictionary[peptideName] = aaSeq
+	if terminal =='n':
+		if peptideName not in terminalDictionary:
+			terminalDictionary[name] = peptideName
+			outputPrint()
+	elif terminal == 'c':
+		terminalDictionary[peptideName] = {'number': peptideNumber, 'mass': peptideValue4sf, 'missed': missedCleaves, 'charge': charge, 'sequence': aaSeq}
+	else:
+		outputPrint()
 
-
+	
 	if peptideName not in peptideDictionary: # if the peptide is not already in dictionary
-		peptideDictionary[peptideName] = 1  # creates a key of peptide and assigns it a value of 1
+		peptideDictionary[peptideName] =  1 # creates a key of peptide and assigns it a value of 1
 	else: 									# else, if the peptide has been encountered already, add 1
-		peptideDictionary[peptideName] += 1 
+		peptideDictionary[peptideName] += 1
+
+if terminal == 'c':
+	for keys in terminalDictionary:
+		print(keys, terminalDictionary[keys]['number'],terminalDictionary[keys]['mass'], terminalDictionary[keys]['missed'], terminalDictionary[keys]['charge'],terminalDictionary[keys]['sequence'], file=outFile)
 
 
 fileObj.close() #close file
 outFile.close()
 
-statsFile = open('stats.csv', 'w') #initiates a new output file for stats
+statsFile = open('enzyme_t_1500_stats.csv', 'w') #initiates a new output file for stats
 peptideNumberList= []  #inititates a new list to store peptide numbers in
 totalProteins = len(peptideDictionary)  # counts the number of entries in peptideDictionary
-print('There are',totalProteins, 'digested proteins') #prints the number of proteins
+print('There are',totalProteins, 'digested proteins which cleave to make peptides in the required range') #prints the number of proteins
 for keys in peptideDictionary:  #for each protein in the dictionary 
 	peptideNumberList.append(peptideDictionary[keys])  # add the number of peptides
 	print(keys, ',',peptideDictionary[keys], file=statsFile)
 totalPeptides = sum(peptideNumberList)  # sums the total value of these peptides 
-print('There are',totalPeptides,'peptides in total')  # prints this total
+print('There are',totalPeptides,'of these peptides in total')  # prints this total
 averagePeptides = format((totalPeptides / totalProteins),'.4f')  # determines the average peptides per protein to 4.dp
-print('The average number of peptides per protein for',file ,'is', averagePeptides)  #prints the average
+print('The average number of peptides (in given range) per ("useful") protein for',file ,'is', averagePeptides)  #prints the average
+
+#error testing - eg arguments aren't correct values
 
 #Bonus task: create dictioary, if peptide name not there, add seq to dictionary
 # if not there, overwrite previous 
