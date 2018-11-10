@@ -1,0 +1,15 @@
+Meeting 4
+
+
+We need to ensure everyone has basic task completed HIGHEST PRIORITY
+This includes a MAN page
+
+Everyone (assuming basic task complete) must Slowly read through the task manual and determine additional values which need to be determined. eg. we need to work out the average peptide per protein. how will this be achieved?
+
+Use the above values to make a prediction for which is the most effective enzyme
+
+These are all things we need to have in mind before we start working on report (individual and group)
+
+Individual report is simply the man page and the script 
+Group report contains which is the most effective enzyme and why, as well as general observations
+
