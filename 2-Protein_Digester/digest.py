@@ -60,8 +60,7 @@ def missed(peptides, missed):
         for n in range(1, args.missed + 2):
             for i in range(len(peptides) - n + 1):
                 peptides_to_add=(peptides[i:i+n])
-                print(peptides_to_add, i, n)
-                ''.join(peptides_to_add)
+                peptides_missed.append(''.join(peptides_to_add))
     return peptides_missed
 
 output=open(f'{args.output}','w')
