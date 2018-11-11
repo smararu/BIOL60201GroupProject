@@ -1,7 +1,7 @@
-#!/usr/bin/env python 3
+#!/usr/bin/env python3
 #
 
-import re, argparse
+import re, argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--filename', type=str, default='dummy.fasta',
@@ -18,7 +18,7 @@ def read_proteins(filename): #processes lines in .fasta file into a list of 2-tu
     proteins= []
     protein_name = ''
     sequence = ''
-    for line in open(args.filename):
+    for line_num, line in enumerate(open(filename), 1):
         if line.startswith('>'): #header lines in a .fasta file will always begin >
             if sequence:
                 proteins.append((protein_name,sequence))
@@ -26,6 +26,10 @@ def read_proteins(filename): #processes lines in .fasta file into a list of 2-tu
             protein_name = line[1:-1] #removes first > and unwanted newline character at end of header line
         else: #any line not beginning > will be sequence in a .fasta file.
             line = line.rstrip('\n*')
+            if re.search('[BOUJZ]', line):
+                print(f'Warning: unusual amino acid (B,O,U,J,Z) found in {protein_name} on line {line_num}', file=sys.stderr)
+            if 'X' in line:
+                print(f'Warning: unknown amino acid X found in {protein_name} on line {line_num}', file=sys.stderr)
             sequence += line #appends my sequence line to sequence
     proteins.append((protein_name,sequence))
     return proteins
@@ -40,7 +44,7 @@ recog_seq = {
 
 def digest(sequence, enzyme):
     peptides = []
-    pattern = recog_seq[args.enzyme]
+    pattern = recog_seq[enzyme]
     peptides_unpaired = re.split(pattern, sequence)
     peptide = zip(peptides_unpaired[::2], peptides_unpaired[1::2]) #run zip on seq_peptides to put pairs together.
     for i, j in peptide:
@@ -51,16 +55,11 @@ def digest(sequence, enzyme):
     return peptides
 
 def missed(peptides, missed):
-    peptides_to_add=[]
     peptides_missed = []
-    if args.missed ==0:
-        for peptide in peptides:
-            peptides_missed.append(peptide)
-    else:
-        for n in range(1, args.missed + 2):
-            for i in range(len(peptides) - n + 1):
-                peptides_to_add=(peptides[i:i+n])
-                peptides_missed.append(''.join(peptides_to_add))
+    for n in range(1, missed + 2):
+        for i in range(len(peptides) - n + 1):
+            peptides_to_add = peptides[i:i+n]
+            peptides_missed.append(''.join(peptides_to_add))
     return peptides_missed
 
 output=open(f'{args.output}','w')
