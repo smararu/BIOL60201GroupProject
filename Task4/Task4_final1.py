@@ -32,7 +32,7 @@ lines = f.readlines()
 nlines = len(lines)
 
 ##### output_file
-t4_results = open('task4_results.csv','w')
+t4_results = open('task4_stats.csv','w')
 print('Total number of peptides in input file is: ', nlines, file=t4_results)
 
 # transform *.masses type file to dataframe
