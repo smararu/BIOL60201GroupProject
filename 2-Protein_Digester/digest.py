@@ -4,14 +4,14 @@
 import re, argparse, sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--filename', type=str, default='dummy.fasta',
-    help='the filename of .fasta file containing protein sequence(s)')
+parser.add_argument('-f', '--filename', type=str, default='sys.stdin',
+    help='the filename of .fasta file containing protein sequence(s) (defaults to standard input)')
 parser.add_argument('-e', '--enzyme',
     help='the name of an enzyme [t,l,a,e]', type=str, default='t')
 parser.add_argument('-m','--missed', type=int,
-    help='an integer value for number of missed cleavages[0-3]', default=0)
+    help='an integer value for number of missed cleavages[0-n]', default=0)
 parser.add_argument('-o','--output', type=str,
-    help='the output name of the file', default='output.fasta')
+    help='the output name of the file (defaults to standard output)', default='sys.stdout')
 args=parser.parse_args()
 
 def read_proteins(filename): #processes lines in .fasta file into a list of 2-tuples.
