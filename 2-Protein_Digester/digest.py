@@ -61,16 +61,19 @@ def missed(peptides, missed):
             full_peptides.append(''.join(peptides_to_add))
     return full_peptides
 
+def output(output, protein_name, full_peptides):
+    peptide_num = 0
+    for peptide in full_peptides:
+        peptide_num += 1
+        print(f">{protein_name}\t{peptide_num}\tmissed={args.missed}\t{args.enzyme}\n{peptide}", file = output_peptides)
+    return output_peptides
+
 def main():
     args = parse_args()
-    output = args.output
     for protein_name, sequence in read_proteins(args.file_input):
         peptides = digest(sequence, args.enzyme)
         full_peptides = missed(peptides, args.missed)
-        peptide_num = 0
-        for peptide in full_peptides: #for loop to transfer list of dictionaries into .fasta format
-            peptide_num += 1
-            print(f">{protein_name}\t{peptide_num}\tmissed={args.missed}\t{args.enzyme}\n{peptide}", file =output)
+        output_peptides = output(args.output, protein_name, full_peptides)
 
 if __name__ == '__main__':
     main()
