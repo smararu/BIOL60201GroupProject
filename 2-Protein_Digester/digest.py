@@ -1,18 +1,16 @@
-#!/usr/bin/env python3
-#
-
 import re, argparse, sys
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--filename', type=str, default='sys.stdin',
-    help='the filename of .fasta file containing protein sequence(s) (defaults to standard input)')
-parser.add_argument('-e', '--enzyme',
-    help='the name of an enzyme [t,l,a,e]', type=str, default='t')
-parser.add_argument('-m','--missed', type=int,
-    help='an integer value for number of missed cleavages[0-n]', default=0)
-parser.add_argument('-o','--output', type=str,
-    help='the output name of the file (defaults to standard output)', default='sys.stdout')
-args=parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--filename', type=str, default='sys.stdin',
+        help='the filename of .fasta file containing protein sequence(s) (defaults to standard input)')
+    parser.add_argument('-e', '--enzyme',
+        help='the name of an enzyme [t,l,a,e] (defaults to t)', type=str, default='t')
+    parser.add_argument('-m','--missed', type=int,
+        help='an integer value for number of missed cleavages[0-n] (defaults to 0)', default=0)
+    parser.add_argument('-o','--output', type=str,
+        help='the output name of the file (defaults to standard output)', default='sys.stdout')
+    args=parser.parse_args()
 
 def read_proteins(filename): #processes lines in .fasta file into a list of 2-tuples.
     proteins= []
@@ -71,3 +69,6 @@ for name, sequence in proteins:
     for peptide in peptides_missed: #for loop to transfer list of dictionaries into .fasta format
         peptide_num+=1
         print(f">{name}\t{peptide_num}\tmissed={args.missed}\t{args.enzyme}\n{peptide}", file =output)
+
+if __name__ == '__main__':
+    main()
