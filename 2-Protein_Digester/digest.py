@@ -34,7 +34,8 @@ def read_proteins(file_input):
                 print(f'Warning: unusual amino acid (B,O,U,J,Z) found in {protein_name} on line {line_num}', file=sys.stderr)
             if 'X' in line:
                 print(f'Warning: unknown amino acid X found in {protein_name} on line {line_num}', file=sys.stderr)
-            sequence += line #appends my sequence line to sequence
+            #appends my sequence line to sequence
+            sequence += line
     proteins.append((protein_name,sequence))
     return proteins
 
@@ -58,8 +59,10 @@ def digest(sequence, enzyme):
         peptides.append(peptides_unpaired[-1])
     return peptides
 
-# If missed > total number of cleavage points, a warning is printed.
+# If missed > total number of cleavage points (len(peptides - 1)), a warning is printed.
 def combine(peptides, missed):
+    if missed > len(peptides) -1:
+        print(f'Warning: there are more missed cleavages then total cleavage points in {protein_name}.', file=sys.stderr)
     full_peptides = []
     for n in range(1, missed + 2):
         for i in range(len(peptides) - n + 1):
@@ -67,9 +70,9 @@ def combine(peptides, missed):
             full_peptides.append(''.join(peptides_to_add))
     return full_peptides
 
-def output(output, protein_name, full_peptides, missed, enzyme):
+def output(output, protein_name, peptides, missed, enzyme):
     peptide_num = 0
-    for peptide in full_peptides:
+    for peptide in peptides:
         peptide_num += 1
         print(f">{protein_name} {peptide_num} missed={missed} {enzyme}\n{peptide}", file = output)
 
@@ -78,7 +81,7 @@ def main():
     for protein_name, sequence in read_proteins(args.file_input):
         peptides = digest(sequence, args.enzyme)
         full_peptides = combine(peptides, args.missed)
-        output_peptides = output(args.output, protein_name, full_peptides, args.missed, args.enzyme)
+        output(args.output, protein_name, full_peptides, args.missed, args.enzyme)
 
 if __name__ == '__main__':
     main()
