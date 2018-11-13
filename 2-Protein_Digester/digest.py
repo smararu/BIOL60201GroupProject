@@ -24,7 +24,7 @@ def read_proteins(file_input):
         #header lines in a .fasta file will always begin >, so we can use this to identify protein name.
         if line_num == 1 and not line.startswith('>'):
             print(f'Fatal error: your input is not a .fasta file.', file=sys.stderr)
-            sys.exit
+            sys.exit(1)
         if line.startswith('>'):
             if sequence:
                 proteins.append((protein_name,sequence))
