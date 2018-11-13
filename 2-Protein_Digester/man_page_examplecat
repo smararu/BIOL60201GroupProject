@@ -1,0 +1,34 @@
+
+DIGEST(1)                    BSD General Commands Manual                   DIGEST(1)
+
+NAME
+     cat -- concatenate and print files
+
+SYNOPSIS
+     cat [-benstuv] [file ...]
+
+DESCRIPTION
+     The cat utility reads files sequentially, writing them to the standard output.
+     The file operands are processed in command-line order.  If file is a single dash
+     (`-') or absent, cat reads from the standard input.  If file is a UNIX domain
+     socket, cat connects to it and then reads it until EOF.  This complements the
+     UNIX domain binding capability available in inetd(8).
+
+     The options are as follows:
+
+     -b      Number the non-blank output lines, starting at 1.
+
+     -e      Display non-printing characters (see the -v option), and display a dol-
+             lar sign (`$') at the end of each line.
+
+     -n      Number the output lines, starting at 1.
+
+     -s      Squeeze multiple adjacent empty lines, causing the output to be single
+             spaced.
+
+     -t      Display non-printing characters (see the -v option), and display tab
+             characters as `^I'.
+
+     -u      Disable output buffering.
+
+EXAMPLES
