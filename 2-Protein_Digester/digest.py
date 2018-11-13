@@ -2,22 +2,22 @@ import re, argparse, sys
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--filename', type=str, default='sys.stdin',
-        help='the filename of .fasta file containing protein sequence(s) (defaults to standard input)')
+    parser.add_argument('-f', '--file_input', type=argparse.FileType('r'), default=sys.stdin,
+        help='the filename of .fasta file containing protein sequence(s) (defaults to standard input).')
     parser.add_argument('-e', '--enzyme',
-        help='the name of an enzyme [t,l,a,e] (defaults to t)', type=str, default='t')
+        help='the name of an enzyme [t,l,a,e] (defaults to t).', type=str, default='t')
     parser.add_argument('-m','--missed', type=int,
-        help='an integer value for number of missed cleavages[0-n] (defaults to 0)', default=0)
-    parser.add_argument('-o','--output', type=str,
-        help='the output name of the file (defaults to standard output)', default='sys.stdout')
+        help='an integer value for number of missed cleavages[0-n] (defaults to 0).', default=0)
+    parser.add_argument('-o','--output', type=argparse.FileType('w'),
+        help='the output name of the file (defaults to standard output).', default=sys.stdout)
     args=parser.parse_args()
     return args
 
-def read_proteins(filename): #processes lines in .fasta file into a list of 2-tuples.
+def read_proteins(file_input): #processes lines in .fasta file into a list of 2-tuples.
     proteins= []
     protein_name = ''
     sequence = ''
-    for line_num, line in enumerate(open(filename), 1):
+    for line_num, line in enumerate(file_input, 1):
         if line.startswith('>'): #header lines in a .fasta file will always begin >
             if sequence:
                 proteins.append((protein_name,sequence))
@@ -64,7 +64,7 @@ def missed(peptides, missed):
 def main():
     args=parse_args()
     output=open(f'{args.output}','w')
-    proteins = read_proteins(args.filename)
+    proteins = read_proteins(args.file_input)
     for name, sequence in proteins:
         peptides = digest(sequence, args.enzyme) #It's a list of lists!!!!
         peptides_missed=missed(peptides, args.missed)
