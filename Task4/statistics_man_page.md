@@ -74,4 +74,4 @@ Moises Gualapuro <gualapuro dot moises at gmail dot com>
 SEE ALSO
 bar(1), foo(5), xyzzy(1)
 
-Python Last change: NOVEMBER 2018 2
+Python Last change: NOVEMBER 2018 1
