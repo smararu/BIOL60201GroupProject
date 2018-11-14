@@ -18,37 +18,38 @@ def parse_args():
     return args
 
 def read_proteins(file_input):
-    """Reads amino acid sequences in .fasta format, and returns a list of
-    proteins [(name, sequence) ...]."""
+    """Reads amino acid sequences in .fasta format (checking for errors), and
+    returns a list of proteins [(name, sequence) ...]."""
 
     proteins = []
     protein_name = ''
     sequence = ''
     for line_num, line in enumerate(file_input, 1):
-        line = line.rstrip('\n*')
-        if line_num == 1 and not line.startswith('>'):# not a valid header line.
-            print(f'Fatal error: your input is not a .fasta file.', file=sys.stderr)
-            sys.exit(1)
+        line = line.rstrip()
         if line.startswith('>'): # header line
             if sequence:
                 proteins.append((protein_name,sequence))
             elif protein_name: # no sequence since last header line
-                print(f'{line_num}: Error: empty sequence', file=sys.stderr)
+                print(f'Error: empty sequence at line {line_num}', file=sys.stderr)
                 sys.exit(1)
             sequence = ''
+            protein_name = line[1:]
         elif re.fullmatch('[A-Z]*\*?', line): # sequence line
-            if not protein_name:
-                print(f'{line_num}: Error: no header line', file=sys.stderr)
+            if not protein_name: # if no header line
+                print(f'Error: no header line at line {line_num}', file=sys.stderr)
                 sys.exit(1)
-            if re.search('[BOUJZ]', line): # unknown sequence in line
+            if re.search('[BOUJZ]', line): # unusual amino acid in line
                 print(f'Warning: unusual amino acid (B,O,U,J,Z) found in {protein_name} on line {line_num}', file=sys.stderr)
-            if 'X' in line: # unknown sequence in line
+            if 'X' in line: # unknown amino acid in line
                 print(f'Warning: unknown amino acid X found in {protein_name} on line {line_num}', file=sys.stderr)
+            if line[-1] = '*':
+                protein_name = ''
             sequence += line
         else: #unrecognised line
-            print(f'{line_num}: Error: Bad line', file=sys.stderr)
-            sys.exit(2)
-    proteins.append((protein_name,sequence))
+            print(f'Error: Bad line at line {line_num}.', file=sys.stderr)
+            sys.exit(1)
+        if protein_name:
+            proteins.append((protein_name,sequence))
     return proteins
 
 #create a dictionary consisting of key = enzyme code, and value = cleavage pattern
