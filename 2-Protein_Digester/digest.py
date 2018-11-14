@@ -1,11 +1,13 @@
-import re, argparse, sys
+import re
+import argparse
+import sys
 
 def parse_args():
     """Collects and validates command-line arguments."""
 
     parser = argparse.ArgumentParser(description=
-    'digest.py reads in a file of .fasta format, a user-specified choice of enzyme, '
-    'a user-specified number of missed cleavages, and outputs in .fasta format')
+    """digest.py reads in a file of .fasta format, a user-specified choice of enzyme,
+    a user-specified number of missed cleavages, and outputs in .fasta format""")
     parser.add_argument('-f', '--file_input', type=argparse.FileType('r'), default=sys.stdin,
         help='the filename of .fasta file containing protein sequence(s) (defaults to standard input).')
     parser.add_argument('-e', '--enzyme', type=str, choices=recog_seq.keys(), default='t',
@@ -50,8 +52,8 @@ def read_proteins(file_input):
         else: #unrecognised line
             print(f'Error: Bad line at line {line_num}.', file=sys.stderr)
             sys.exit(1)
-        if protein_name:
-            proteins.append((protein_name,sequence))
+    if protein_name:
+        proteins.append((protein_name,sequence))
     return proteins
 
 #create a dictionary consisting of key = enzyme code, and value = cleavage pattern
@@ -63,8 +65,8 @@ recog_seq = {
     }
 
 def digest(sequence, enzyme):
-    """Takes a protein sequence and uses a regular expression pattern keyed to a
-    user-specified enzyme code to split the sequence, and returns a list of peptides."""
+    """Splits a protein sequence at the cleavage points for a user-specified enzyme,
+    returns a list of peptide sequences."""
 
     peptides = []
     pattern = recog_seq[enzyme]
@@ -83,18 +85,18 @@ def missed_cleavages(peptides, missed, protein_name):
     """outputs list of peptides with 0 missed cleavages,
     1 missed cleavage, n missed cleavages."""
 
-    full_peptides = []
+    combined_peptides = []
     for n in range(1, missed + 2):
         for i in range(len(peptides) - n + 1):
             peptides_to_add = peptides[i:i+n]
-            full_peptides.append(''.join(peptides_to_add))
-    return full_peptides
+            combined_peptides.append(''.join(peptides_to_add))
+    return combined_peptides
 
-def output(peptides, protein_name, missed, enzyme, output):
+def output(peptides, output_file, protein_name, missed, enzyme):
     """docstring 4."""
 
     for peptide_num, peptide in enumerate(peptides, 1):
-        print(f"{protein_name} {peptide_num} missed={missed} {enzyme}\n{peptide}", file = output)
+        print(f"{protein_name} {peptide_num} missed={missed} {enzyme}\n{peptide}", file = output_file)
 
 def main():
     """docstring 5."""
@@ -102,8 +104,8 @@ def main():
     args = parse_args()
     for protein_name, sequence in read_proteins(args.file_input):
         peptides = digest(sequence, args.enzyme)
-        full_peptides = missed_cleavages(peptides, args.missed, protein_name)
-        output(full_peptides, protein_name, args.missed, args.enzyme, args.output)
+        combined_peptides = missed_cleavages(peptides, args.missed, protein_name)
+        output(combined_peptides, args.output, protein_name, args.missed, args.enzyme)
 
 if __name__ == '__main__':
     main()
