@@ -15,8 +15,10 @@ def parse_args():
     args=parser.parse_args()
     return args
 
-#processes lines in .fasta file into a list of 2-tuples.
 def read_proteins(file_input):
+    """Reads amino acid sequences in .fasta format, and returns a list of
+    proteins [(name, sequence) ...]"""
+
     proteins = []
     protein_name = ''
     sequence = ''
@@ -53,11 +55,15 @@ recog_seq = {
     }
 
 def digest(sequence, enzyme):
+    """Takes a protein sequence and uses a regular expression pattern keyed to a
+    user-specified enzyme code to split the sequence, and returns a list of peptides"""
+
     peptides = []
     pattern = recog_seq[enzyme]
     peptides_unpaired = re.split(pattern, sequence)
-    # Run zip on seq_peptides to put pairs together.
+    # Run zip on peptides_unpaired to produce a list of pairs ([peptide, cleavage pattern], ...)
     peptides_paired = zip(peptides_unpaired[::2], peptides_unpaired[1::2])
+    #combines each peptide (p) and matched cleavage pattern (c)
     peptides = [p+c for p,c in peptides_paired]
     # If the cleavage site is not at the end of the protein, zip will leave off the final peptide, so we add it.
     if peptides_unpaired[-1]:
@@ -65,10 +71,10 @@ def digest(sequence, enzyme):
     return peptides
 
 # If missed > total number of cleavage points (len(peptides - 1)), a warning is printed.
-def combine(peptides, missed, protein_name):
-    if missed > len(peptides) -1:
-        print(f'Warning: number of missed cleavages > '
-        f'total cleavage sites in {protein_name}.', file=sys.stderr)
+def missed_cleavages(peptides, missed, protein_name):
+    """outputs list of peptides with 0 missed cleavages,
+    1 missed cleavage, n missed cleavages."""
+
     full_peptides = []
     for n in range(1, missed + 2):
         for i in range(len(peptides) - n + 1):
@@ -77,14 +83,18 @@ def combine(peptides, missed, protein_name):
     return full_peptides
 
 def output(peptides, protein_name, missed, enzyme, output):
+    """docstring 4"""
+
     for peptide_num, peptide in enumerate(peptides, 1):
         print(f">{protein_name} {peptide_num} missed={missed} {enzyme}\n{peptide}", file = output)
 
 def main():
+    """docstring 5"""
+
     args = parse_args()
     for protein_name, sequence in read_proteins(args.file_input):
         peptides = digest(sequence, args.enzyme)
-        full_peptides = combine(peptides, args.missed, protein_name)
+        full_peptides = missed_cleavages(peptides, args.missed, protein_name)
         output(full_peptides, protein_name, args.missed, args.enzyme, args.output)
 
 if __name__ == '__main__':
