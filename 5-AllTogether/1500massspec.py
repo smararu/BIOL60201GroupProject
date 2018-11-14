@@ -128,11 +128,11 @@ for index in range(0, len(lines),2): # for each of the lines in the range, count
 	else:
 		outputPrint()
 
-	
-	if peptideName not in peptideDictionary: # if the peptide is not already in dictionary
-		peptideDictionary[peptideName] =  1 # creates a key of peptide and assigns it a value of 1
-	else: 									# else, if the peptide has been encountered already, add 1
-		peptideDictionary[peptideName] += 1
+	if 1000 < float(peptideValue4sf) < 1500:
+		if peptideName not in peptideDictionary: # if the peptide is not already in dictionary
+			peptideDictionary[peptideName] =  1 # creates a key of peptide and assigns it a value of 1
+		else: 									# else, if the peptide has been encountered already, add 1
+			peptideDictionary[peptideName] += 1
 
 if terminal == 'c':  # if user has requested 'c' terminal peptides
 	for keys in terminalDictionary:  # for each peptide
