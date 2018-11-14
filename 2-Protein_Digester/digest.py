@@ -1,6 +1,8 @@
 import re, argparse, sys
 
 def parse_args():
+    """Collects and validates command-line arguments."""
+
     parser = argparse.ArgumentParser(description=
     'digest.py reads in a file of .fasta format, a user-specified choice of enzyme, '
     'a user-specified number of missed cleavages, and outputs in .fasta format')
@@ -17,32 +19,35 @@ def parse_args():
 
 def read_proteins(file_input):
     """Reads amino acid sequences in .fasta format, and returns a list of
-    proteins [(name, sequence) ...]"""
+    proteins [(name, sequence) ...]."""
 
     proteins = []
     protein_name = ''
     sequence = ''
     for line_num, line in enumerate(file_input, 1):
-        #header lines in a .fasta file will always begin >, so we can use this to identify protein name.
-        if line_num == 1 and not line.startswith('>'):
+        line = line.rstrip('\n*')
+        if line_num == 1 and not line.startswith('>'):# not a valid header line.
             print(f'Fatal error: your input is not a .fasta file.', file=sys.stderr)
             sys.exit(1)
-        if line.startswith('>'):
+        if line.startswith('>'): # header line
             if sequence:
                 proteins.append((protein_name,sequence))
-                #sequence is reset for each new protein
-                sequence = ''
-            #removes first > and unwanted newline character at end of header line
-            protein_name = line[1:-1]
-        #any line not beginning > will be sequence in a .fasta file.
-        else:
-            line = line.rstrip('\n*')
-            if re.search('[BOUJZ]', line):
+            elif protein_name: # no sequence since last header line
+                print(f'{line_num}: Error: empty sequence', file=sys.stderr)
+                sys.exit(1)
+            sequence = ''
+        elif re.fullmatch('[A-Z]*\*?', line): # sequence line
+            if not protein_name:
+                print(f'{line_num}: Error: no header line', file=sys.stderr)
+                sys.exit(1)
+            if re.search('[BOUJZ]', line): # unknown sequence in line
                 print(f'Warning: unusual amino acid (B,O,U,J,Z) found in {protein_name} on line {line_num}', file=sys.stderr)
-            if 'X' in line:
+            if 'X' in line: # unknown sequence in line
                 print(f'Warning: unknown amino acid X found in {protein_name} on line {line_num}', file=sys.stderr)
-            #appends my sequence line to sequence
             sequence += line
+        else: #unrecognised line
+            print(f'{line_num}: Error: Bad line', file=sys.stderr)
+            sys.exit(2)
     proteins.append((protein_name,sequence))
     return proteins
 
@@ -56,7 +61,7 @@ recog_seq = {
 
 def digest(sequence, enzyme):
     """Takes a protein sequence and uses a regular expression pattern keyed to a
-    user-specified enzyme code to split the sequence, and returns a list of peptides"""
+    user-specified enzyme code to split the sequence, and returns a list of peptides."""
 
     peptides = []
     pattern = recog_seq[enzyme]
@@ -83,13 +88,13 @@ def missed_cleavages(peptides, missed, protein_name):
     return full_peptides
 
 def output(peptides, protein_name, missed, enzyme, output):
-    """docstring 4"""
+    """docstring 4."""
 
     for peptide_num, peptide in enumerate(peptides, 1):
-        print(f">{protein_name} {peptide_num} missed={missed} {enzyme}\n{peptide}", file = output)
+        print(f"{protein_name} {peptide_num} missed={missed} {enzyme}\n{peptide}", file = output)
 
 def main():
-    """docstring 5"""
+    """docstring 5."""
 
     args = parse_args()
     for protein_name, sequence in read_proteins(args.file_input):
