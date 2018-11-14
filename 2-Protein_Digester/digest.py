@@ -42,9 +42,11 @@ def read_proteins(file_input):
                 print(f'Warning: unusual amino acid (B,O,U,J,Z) found in {protein_name} on line {line_num}', file=sys.stderr)
             if 'X' in line: # unknown amino acid in line
                 print(f'Warning: unknown amino acid X found in {protein_name} on line {line_num}', file=sys.stderr)
-            if line[-1] = '*':
+            sequence += line.rstrip('*')
+            if line[-1] == '*': #reset protein name at end of protein
+                proteins.append((protein_name,sequence))
                 protein_name = ''
-            sequence += line
+                sequence =''
         else: #unrecognised line
             print(f'Error: Bad line at line {line_num}.', file=sys.stderr)
             sys.exit(1)
