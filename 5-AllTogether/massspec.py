@@ -22,7 +22,7 @@ averageMassesDict = {'A' :  71.08, 'C' : 103.14, 'D' : 115.09,  #dictionary of a
 'X' : 0, 'H2O' : 18.0153, 'proton' : 1, 'PO3': 79.98}
 
 options = argparse.ArgumentParser(description='Determine isotopic masses for each digested peptide')  # introduce arguments 
-options.add_argument("-f", help="choose file with which to  perform task 3, mass spec analysis")
+options.add_argument("-f", help="choose .fasta file with which to  perform task 3, mass spec analysis") # argument for user to choose file
 options.add_argument("-i", help="choose either 'monoisotopic' or 'averageisotopic' mass values ['m','a']", default='a') #argument for either monoisotopic or average isotopic masses
 options.add_argument("-c", help="choose a charge for peptides[1,2,3]", default='1') # argument for charge of peptides
 options.add_argument("-t", help="choose to report back only N or C terminal peptides ['n','c','a' ]", default='a')  #argument for N or C terminal peptides 
@@ -33,20 +33,17 @@ args = options.parse_args()  # stores arguments as variable, args
 
 
 if (args.s is not 'y') and (args.s is not 'n'):  # error checking: if -s argument is neither 'y' or 'n',
-	print("Error: Stats argument ('-s') must be 'y' or 'n'. Default is 'n'.")  # Prints error message
-	sys.exit()  # halts the program
+	sys.exit("Error: Stats argument ('-s') must be 'y' or 'n'. Default is 'n'.")  # halts the program
 
 if (args.i is not 'm') and (args.i is not 'a'): #error checking: if -i argument is neither 'm' or 'a',
-	print("Error: Isotopic mass (-i) argument must be 'm' (monoisotopic masses) or 'a' (average isotopic). Default is 'a'.") # prints error message
-	sys.exit()  # halts the program
+	sys.exit("Error: Isotopic mass (-i) argument must be 'm' (monoisotopic masses) or 'a' (average isotopic). Default is 'a'.")  # halts the program
 if args.i == 'm':   #if the user chooses 'm' masses
 	massDictionary = monoMassesDict   # use the monoisotopic masses dictionary
 else:
 	massDictionary = averageMassesDict  # otherwise, default to average masses
 
 if (args.c is not '1') and (args.c is not '2') and (args.c is not '3'):  # error checking: if the -c argument is neither 1, 2 or 3,
-	print("Error: Charge (-c) can only take value of either 1, 2, or 3. Default is '1'.") # print error message
-	sys.exit()  # half program
+	sys.exit("Error: Charge (-c) can only take value of either 1, 2, or 3. Default is '1'.")  # half program
 if args.c == '3':  #if user chooses charge to be 3
 	charge = 3   # charge is 3
 elif args.c == '2': #likewise for 2
@@ -55,8 +52,7 @@ else:
 	charge = 1 # default to 1
 
 if (args.t is not 'n') and (args.t is not 'c') and (args.t is not 'a'):  # if the -t argument is neither n, c or a
-	print("Error: terminal (-t) argument must be 'n' (n-terminal), 'c' (c-terminal) or 'a' (all peptides). Default is 'a'.")  # print error message
-	sys.exit()  # halt the program
+	sys.exit("Error: terminal (-t) argument must be 'n' (n-terminal), 'c' (c-terminal) or 'a' (all peptides). Default is 'a'.")  # halt the program
 if args.t == 'n': #if argument for -t is 'n' ie user chooses to report only N terminal peptides,
 	terminal = 'n' # terminal variable is 'n'
 elif args.t == 'c': # likewise for 'c'
