@@ -143,8 +143,8 @@ fileObj.close() #close files
 outFile.close()
 
 if args.s == 'y':
-	statsFile = open(file[:-6]+'.csv', 'w') #initiates a new output file for stats
-	statsOverview = open(file[:-6]+'.stats', 'w')
+	statsFile = open(file[:-6]+'_1500.csv', 'w') #initiates a new output file for stats
+	statsOverview = open(file[:-6]+'_1500.stats', 'w')
 	peptideNumberList= []  #inititates a new list to store peptide numbers in
 	totalProteins = len(peptideDictionary)  # counts the number of entries in peptideDictionary
 	print('There are',totalProteins, 'digested proteins which cleave to make peptides in the required range', file=statsOverview) #prints the number of proteins
