@@ -2,11 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-import re
-import getopt, sys
 import argparse
-import csv
 
 ##### create arguments
 parser = argparse.ArgumentParser()
@@ -33,7 +29,7 @@ lines = f.readlines()
 nlines = len(lines)
 
 ##### output_file
-t4_results = open('group3_task4.tab','w')
+t4_results = open('Statistics.tab','w')
 print('Total number of peptides in input file is: ', nlines)
 
 # transform *.masses type file to dataframe
