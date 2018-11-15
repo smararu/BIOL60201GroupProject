@@ -1,0 +1,39 @@
+
+DIGEST.PY                    General Commands Manual - Python 3                   DIGEST.PY
+
+NAME
+     digest.py -- restriction enzyme digest
+
+SYNOPSIS
+     python3 digest.py [-efhmo]
+
+DESCRIPTION
+    DIGEST.PY reads a .fasta format file containing protein amino acid sequences, splits each
+    protein sequence at the cleavage points for a user-specified enzyme, concatenates resulting
+    peptides and outputs a combined list of peptides for 0-n missed cleavages with accompanying
+    header lines in .fasta format.
+
+    The optional arguments are as follows:
+       -h, --help           Show a help message and exit
+
+       -f, --file_input     Select the name of your input file (in fasta format; using a non-fasta
+                            format will return an error messages). Default is standard input.
+
+       -e, --enzyme         Select your enzyme from a choice of four options: trypsin (t),
+                            endoproteinase lys-C (l), endoproteinase Arg-C (a), V8 proteinase (Glu-C)
+                            (e). Default is trypsin (t).
+
+       -m, -- missed        Specify the number of missed cleavages, an integer value from 0 to 6.
+                            Default is 0.
+
+       -o, --output         Select the name of your output file (which will be in fasta format).
+                            Default is standard output.
+
+EXAMPLES
+    python3 digest.py
+    python3 digest.py -f dummy.fasta -m 1 -e t -o output.fasta
+    python3 digest.py --file_input realdummy.peps --enzyme t --missed 1 --output output.fasta
+    python3 digest.py --help
+
+AUTHOR
+    Abigail Wood
