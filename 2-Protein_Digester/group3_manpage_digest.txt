@@ -5,28 +5,28 @@ NAME
      digest.py -- restriction enzyme digest
 
 SYNOPSIS
-     python3 digest.py [-efhmo]
+     python3 digest.py [-h] [-f input_file] [-e enzyme_code] [-m count] [-o output_file]
 
 DESCRIPTION
-    DIGEST.PY reads a .fasta format file containing protein amino acid sequences, splits each
+    DIGEST.PY reads a FASTA format file containing protein amino acid sequences, splits each
     protein sequence at the cleavage points for a user-specified enzyme, concatenates resulting
-    peptides and outputs a combined list of peptides for 0-n missed cleavages with accompanying
-    header lines in .fasta format.
+    peptides to simulate the effect of missing some number of cleavages, and outputs a combined
+    list of peptides for 0-n missed cleavages with accompanying header lines in FASTA format.
 
     The optional arguments are as follows:
        -h, --help           Show a help message and exit
 
-       -f, --file_input     Select the name of your input file (in fasta format; using a non-fasta
-                            format will return an error messages). Default is standard input.
+       -f, --file_input     Select the name of your input file (in FASTA format; using a non-FASTA
+                            format will produce an error message). Default is standard input.
 
        -e, --enzyme         Select your enzyme from a choice of four options: trypsin (t),
                             endoproteinase lys-C (l), endoproteinase Arg-C (a), V8 proteinase (Glu-C)
                             (e). Default is trypsin (t).
 
-       -m, -- missed        Specify the number of missed cleavages, an integer value from 0 to 6.
-                            Default is 0.
+       -m, -- missed        Specify the maximum number of missed cleavages, an integer value from
+                            0 to 6. Default is 0.
 
-       -o, --output         Select the name of your output file (which will be in fasta format).
+       -o, --output         Select the name of your output file (which will be in FASTA format).
                             Default is standard output.
 
 EXAMPLES
