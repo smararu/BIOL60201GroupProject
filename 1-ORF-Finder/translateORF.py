@@ -1,8 +1,28 @@
 import sys
+import os.path
 
 # TODO: Handle command line arguments potentially using argsparse
 # Or just error check seeing as its just one argument
+if len(sys.argv) < 2:
+    print ("Please specify the file that you want to translate")
+    print ("Default format python3 translateORF.py filename")
+    sys.exit()
+
 filename = sys.argv[1]
+
+if "-h" in sys.argv or "--help" in sys.argv:
+    print ("Standard Run: python3 translateORF.py genome.fasta")
+    print ("For more information on the script, please consult the README.txt")
+    sys.exit()
+
+if str(filename).isnumeric() :
+    print ("You have entered a numeric value for the file:")
+    print ("Please enter in the format python3 translateORF.py filename")
+    sys.exit()
+
+if not os.path.exists('./' + str(filename)):
+    print ("No such file: " + str(filename))
+    sys.exit()
 
 # Constant Nucleotide Table and Complement Table
 NUCLEOTIDE_TABLE = {
