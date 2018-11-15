@@ -1,7 +1,7 @@
-# digest.py reads a .fasta format file containing protein amino acid sequences,
+# digest.py reads a FASTA format file containing protein amino acid sequences,
 # splits each protein sequence at the cleavage points for a user-specified enzyme,
 # concatenates resulting peptides and outputs a combined list of peptides 0-n missed
-# cleavages with accompanying header lines in .fasta format.
+# cleavages with accompanying header lines in FASTA format.
 
 import re
 import argparse
@@ -11,21 +11,21 @@ def parse_args():
     """Collects and validates command-line arguments."""
 
     parser = argparse.ArgumentParser(description=
-    """digest.py reads a file of .fasta format, a user-specified choice of enzyme [t = trypsin,
+    """digest.py reads a file in FASTA format, a user-specified choice of enzyme [t = trypsin,
     l = endoproteinase Lys-C, a = endoproteinase Arg-C, e = V8 proteinase (Glu-C)], a user-specified
-    number of missed cleavages [0-6], and outputs in .fasta format""")
+    number of missed cleavages [0-6], and outputs in FASTA format""")
     parser.add_argument('-f', '--file_input', type=argparse.FileType('r'), default=sys.stdin,
-        help='the filename of .fasta file containing protein sequence(s) (defaults to standard input).')
+        help='the filename of a FASTA file containing protein sequence(s) (defaults to standard input).')
     parser.add_argument('-e', '--enzyme', type=str, choices=recog_seq.keys(), default='t',
         help='the 1 letter code for an enzyme [t,l,a,e] (defaults to t).')
     parser.add_argument('-m','--missed', type=int, choices=range(0,7), default=0,
         help='an integer value for number of missed cleavages[0-6] (defaults to 0).')
     parser.add_argument('-o','--output', nargs='?', type=argparse.FileType('w'), default=sys.stdout,
-        help='the output name of the file (defaults to standard output).')
+        help='the output name for the FASTA file (defaults to standard output).')
     return parser.parse_args()
 
 def read_proteins(file_input):
-    """Reads amino acid sequences in .fasta format (checking for errors), and
+    """Reads amino acid sequences in FASTA format (checking for errors), and
     returns a list of proteins [(name, sequence) ...]."""
 
     proteins = []
