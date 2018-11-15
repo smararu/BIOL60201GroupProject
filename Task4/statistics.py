@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import re
 import getopt, sys
 import argparse
@@ -32,7 +33,7 @@ lines = f.readlines()
 nlines = len(lines)
 
 ##### output_file
-t4_results = open('Statistics.tab','w')
+t4_results = open('group3_task4.tab','w')
 print('Total number of peptides in input file is: ', nlines)
 
 # transform *.masses type file to dataframe
@@ -79,7 +80,7 @@ task4_a = task4dat[task4dat['enzyme']=="a"]
 task4_e = task4dat[task4dat['enzyme']=="e"]
 
 # main histogram
-plt.hist((task4_t['mass_to_charge'],task4_a['mass_to_charge'],task4_l['mass_to_charge'],task4_e['mass_to_charge']),bins = args.binss, label= ["Trypsin", "Endoproteinase Arg-C","Endoproteinase Lys-C","V8 proteinase"], stacked = False, alpha = 0.8,rwidth = 0.8)
+plt.hist((task4_t['mass_to_charge'],task4_a['mass_to_charge'],task4_l['mass_to_charge'],task4_e['mass_to_charge']),bins = args.binss, label= ["Trypsin", "Endoproteinase Arg-C","Endoproteinase Lys-C","V8 proteinase"], color=('r','b','g','c'),stacked = False, alpha = 0.8,rwidth = 0.8)
 plt.title('Mass-to-charge by enzyme')
 plt.ylabel('Number of peptides')
 plt.xlabel('Mass-to-charge, m/z')
@@ -123,8 +124,8 @@ if args.analysis=="range":
         else:
             cond3 = data1['sequence'].str.contains(args.sequence, na=False)
             data11 = data1[cond3]
-            print("Mass to charge within the range and for defined sequence is: ",data11['mass_to_charge'].mean()," Da")
-            print("Total number of peptides within the range and for defined sequence is: ", data11['mass_to_charge'].count())
+            print("Mass to charge within the range and for defined sequence is: ",data11['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number of peptides within the range and for defined sequence is: ", data11['mass_to_charge'].count(), file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
             bin_left = 0
@@ -148,8 +149,8 @@ if args.analysis=="range":
         data2=data1[cond4]
         # user defines range, enzyme, not sequence
         if args.sequence == "":
-            print("Mass to charge within the range and defined enzyme is: ",data2['mass_to_charge'].mean()," Da")
-            print("Total number of peptides within the range and defined enzyme is: ", data2['mass_to_charge'].count())
+            print("Mass to charge within the range and defined enzyme is: ",data2['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number of peptides within the range and defined enzyme is: ", data2['mass_to_charge'].count(), file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
             bin_left = 0
@@ -171,8 +172,8 @@ if args.analysis=="range":
         else:
             cond5 = data2['sequence'].str.contains(args.sequence, na=False)
             data21 = data2[cond5]
-            print("Mass to charge within the range, defined enzyme and sequence is: ",data21['mass_to_charge'].mean()," Da")
-            print("Total number of peptides within the range, defined enzyme and sequence is: ", data21['mass_to_charge'].count())
+            print("Mass to charge within the range, defined enzyme and sequence is: ",data21['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number of peptides within the range, defined enzyme and sequence is: ", data21['mass_to_charge'].count(), file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
             bin_left = 0
@@ -200,8 +201,8 @@ else:
     if args.enzyme == "":
         # if user defines full, not enzyme, not sequence
         if args.sequence == "":
-            print("Mass to charge for data in default 1000Da-1500Da limits is: ",task4dat['mass_to_charge'].mean()," Da")
-            print("Total number of peptides for data in default 1000Da-1500Da limits is: ", task4dat['mass_to_charge'].count())
+            print("Mass to charge for data in default 1000Da-1500Da limits is: ",task4dat['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number of peptides for data in default 1000Da-1500Da limits is: ", task4dat['mass_to_charge'].count(), file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
             bin_left = 0
@@ -223,8 +224,8 @@ else:
         else:
             cond6 = task4dat['sequence'].str.contains(args.sequence, na=False)
             data3= task4dat[cond6]
-            print("Mass to charge for data in default 1000Da-1500Da limits and defined sequence is: ",data3['mass_to_charge'].mean()," Da")
-            print("Total number for data in default 1000Da-1500Da limits and defined sequence is: ", data3['mass_to_charge'].count())
+            print("Mass to charge for data in default 1000Da-1500Da limits and defined sequence is: ",data3['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number for data in default 1000Da-1500Da limits and defined sequence is: ", data3['mass_to_charge'].count(), file = t4_results)
             print(data3, file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
@@ -251,8 +252,8 @@ else:
         
         #if user defines full, enzyme, not sequence
         if args.sequence == "":
-            print("Mass to charge for data in default 1000Da-1500Da limits and defined enzyme is: ",data4['mass_to_charge'].mean()," Da")
-            print("Total number of peptides for data in default 1000Da-1500Da limits and defined enzyme is: ", data4['mass_to_charge'].count())
+            print("Mass to charge for data in default 1000Da-1500Da limits and defined enzyme is: ",data4['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number of peptides for data in default 1000Da-1500Da limits and defined enzyme is: ", data4['mass_to_charge'].count(), file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
             bin_left = 0
@@ -274,8 +275,8 @@ else:
         else:
             cond8 = data4['sequence'].str.contains(args.sequence, na=False)
             data41 = data4[cond8]
-            print("Mass to charge for data in default 1000Da-1500Da limits, defined enzyme and sequence is: ",data41['mass_to_charge'].mean()," Da")
-            print("Total number of peptides for data in default 1000Da-1500Da limits, defined enzyme and sequence is: ", data41['mass_to_charge'].count())
+            print("Mass to charge for data in default 1000Da-1500Da limits, defined enzyme and sequence is: ",data41['mass_to_charge'].mean()," Da", file = t4_results)
+            print("Total number of peptides for data in default 1000Da-1500Da limits, defined enzyme and sequence is: ", data41['mass_to_charge'].count(), file = t4_results)
             print("bin_left \t bin_right \t number_peps \t mean_mz", file = t4_results)
             bin_width = (args.maximum-args.minimum)/args.binss
             bin_left = 0
