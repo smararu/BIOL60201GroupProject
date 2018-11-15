@@ -11,17 +11,17 @@ def parse_args():
     """Collects and validates command-line arguments."""
 
     parser = argparse.ArgumentParser(description=
-    """digest.py reads a file of .fasta format, a user-specified choice of enzyme,
-    a user-specified number of missed cleavages, and outputs in .fasta format""")
+    """digest.py reads a file of .fasta format, a user-specified choice of enzyme [t = trypsin,
+    l = endoproteinase Lys-C, a = endoproteinase Arg-C, e = V8 proteinase (Glu-C)], a user-specified
+    number of missed cleavages [0-6], and outputs in .fasta format""")
     parser.add_argument('-f', '--file_input', type=argparse.FileType('r'), default=sys.stdin,
         help='the filename of .fasta file containing protein sequence(s) (defaults to standard input).')
     parser.add_argument('-e', '--enzyme', type=str, choices=recog_seq.keys(), default='t',
-        help='the name of an enzyme [t,l,a,e] (defaults to t).')
+        help='the 1 letter code for an enzyme [t,l,a,e] (defaults to t).')
     parser.add_argument('-m','--missed', type=int, choices=range(0,7), default=0,
         help='an integer value for number of missed cleavages[0-6] (defaults to 0).')
     parser.add_argument('-o','--output', nargs='?', type=argparse.FileType('w'), default=sys.stdout,
         help='the output name of the file (defaults to standard output).')
-    args=parser.parse_args()
     return parser.parse_args()
 
 def read_proteins(file_input):
@@ -31,14 +31,13 @@ def read_proteins(file_input):
     proteins = []
     protein_name = ''
     sequence = ''
-    #iterates over lines in file, counts line number
+    # iterates over lines in file, counts line number
     for line_num, line in enumerate(file_input, 1):
         line = line.rstrip()
         # identifies header line
         if line.startswith('>'):
             if sequence:
                 proteins.append((protein_name,sequence))
-            # error returns if no sequence added since last header line
             elif protein_name:
                 print(f'Error: empty sequence at line {line_num}', file=sys.stderr)
                 sys.exit(1)
@@ -46,7 +45,6 @@ def read_proteins(file_input):
             protein_name = line[1:]
         # identifies sequence line
         elif re.fullmatch('[A-Z]*\*?', line):
-            # error returns if missing header line
             if not protein_name:
                 print(f'Error: no header line at line {line_num}', file=sys.stderr)
                 sys.exit(1)
@@ -59,12 +57,12 @@ def read_proteins(file_input):
                 print(f'''Warning: unknown amino acid X found in {protein_name}
                 on line {line_num}''', file=sys.stderr)
             sequence += line.rstrip('*')
-            #appends full protein, resets protein name at end of protein
+            # appends full protein, resets protein name at end of protein
             if line[-1] == '*':
                 proteins.append((protein_name,sequence))
                 protein_name = ''
                 sequence =''
-        # error returns if line is unrecognised type
+        # exit with error message if line is unrecognised type
         else:
             print(f'Error: Bad line at line {line_num}.', file=sys.stderr)
             sys.exit(1)
@@ -90,7 +88,7 @@ def digest(sequence, enzyme):
     peptides_unpaired = re.split(pattern, sequence)
     # zip pairs each peptide with the adjacent following pattern
     peptides_paired = zip(peptides_unpaired[::2], # peptides
-        peptides_unpaired[1::2]) #cleavage patterns
+                          peptides_unpaired[1::2]) #cleavage patterns
     peptides = [p+c for p,c in peptides_paired]
     # if protein ends with a peptide not a pattern, zip ignores it, so we add it here.
     if peptides_unpaired[-1]:
